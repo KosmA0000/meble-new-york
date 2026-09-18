@@ -262,8 +262,17 @@ footer{padding:2.2rem 0;border-top:1px solid var(--line);font-size:.66rem;letter
   .kamera{position:static;height:auto;overflow:visible}
   #galeria{display:block}
 
-  /* ściana realizacji nie jedzie na telefonie — jej rolę przejmuje galeria przed kontaktem */
-  #sciana{display:none}
+  /* Ściana realizacji nie jedzie na telefonie (jej rolę przejmuje galeria przed kontaktem),
+     ale napis „Realizacje dobrane do Twojego wnętrza" zostaje w swoim miejscu przepływu. */
+  #sciana{display:block}
+  #sciana .kamera{padding:4.5rem 0 1rem;background:var(--bg)}
+  #sciana .pas{display:none}
+  .sciana-tytul{position:relative;top:auto;transform:none!important;opacity:1!important;
+    padding:0 12px;z-index:1}
+  .sciana-tytul .tresc{transform:none!important;display:block}
+  .sciana-tytul b{font-size:clamp(2rem,10vw,3rem)}
+  .sciana-tytul i{font-size:clamp(.9rem,4.2vw,1.2rem);margin-top:.7em}
+  .sciana-tytul i .m > span{transform:none!important}
 
   /* ——— MENU jak na numie: pełnoekranowy panel, pigułka „Zamknij", telefon na dole ———
      pomiar numy: pozycje 39 px co 71 px (odstęp 25), panel biały, wsunięty 8 px, rogi 24 px */
@@ -648,8 +657,8 @@ addEventListener('keydown',function(e){
 
 var ostatniY=0;
 function pasekNaPrzewijanie(y){
-  /* na telefonie pasek z menu i telefonem ma być zawsze pod ręką */
-  if(MOBILE){ pasek.classList.remove('schowany'); ostatniY=y; return; }
+  /* menu i telefon mają być zawsze pod ręką — na każdym ekranie */
+  pasek.classList.remove('schowany'); ostatniY=y; return;
   if(y<90){ pasek.classList.remove('schowany'); }
   else if(y>ostatniY+4){ pasek.classList.add('schowany'); menuBlok.classList.remove('otwarte'); }
   else if(y<ostatniY-4){ pasek.classList.remove('schowany'); }
@@ -682,11 +691,11 @@ if(!MOBILE && window.gsap && window.ScrollTrigger){
     /* wymiana drugiego wiersza: „New York" wyjeżdża w górę, „na wymiar" wjeżdża od dołu */
     .fromTo('.hero-t .w1',{y:'0%'},{y:'-106%',ease:'power2.inOut',duration:0.08},0.03)
     .fromTo('.hero-t .w2',{y:'106%'},{y:'0%',ease:'power2.inOut',duration:0.08},0.03)
-    .to('#trescOtw',{opacity:0,y:-40,ease:'none',duration:0.08},0.08)
-    .to('#kadr',{width:340,height:225,borderRadius:985,ease:'power1.inOut',duration:0.18},0.12)
-    .to('#fotoOtw',{scale:1.2,ease:'none',duration:0.18},0.12)
+    .to('#trescOtw',{opacity:0,y:-40,ease:'none',duration:0.08},0.13)
+    .to('#kadr',{width:340,height:225,borderRadius:985,ease:'power1.inOut',duration:0.18},0.17)
+    .to('#fotoOtw',{scale:1.2,ease:'none',duration:0.18},0.17)
     /* pauza: kadr stoi sam wycentrowany na ekranie jako zaokrąglony kafelek, zanim wjadą zdjęcia */
-    .to({},{duration:0.70});
+    .to({},{duration:0.65});
 
   /* ——— RUCH ŚCIANY — przepisany z numa.uprock.pro ———
      Pomiar ustalony: po każdym skoku 450 ms na dojechanie scrubu (próbkowanie „w biegu"
