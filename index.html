@@ -419,7 +419,8 @@ footer{padding:2.2rem 0;border-top:1px solid var(--line);font-size:.66rem;letter
 <!-- SCENA 2 — ŚCIANA REALIZACJI: trzy pasy jadą w przeciwnych kierunkach (numa route) -->
 <!-- zachodzi na scenę otwierającą: pas rusza dokładnie wtedy, gdy kadr
      skończył kurczyć się do karty 340×225 (numa: cover 0–2700, route 1035–4635) -->
-<section class="scena" id="sciana" style="height:670vh;margin-top:-269vh;z-index:3">
+<!-- Kamera pozostaje przypięta do końca osi animacji (6500 px), także na wysokich ekranach. -->
+<section class="scena" id="sciana" style="height:calc(6500px + 100svh);margin-top:-269vh;z-index:3">
   <div class="kamera">
     <div class="pas" data-kier="1"></div>
     <div class="pas" data-kier="-1"></div>
@@ -431,7 +432,8 @@ footer{padding:2.2rem 0;border-top:1px solid var(--line);font-size:.66rem;letter
 <!-- SCENA 3 — NAJAZD KAMERY: scale 1 → 2, ease In; wiersze rozjeżdżają się (era) -->
 <!-- zachodzi na ścianę: pełnoekranowy kadr wsuwa się z prawej, zanim kadry ściany
      zdążą zniknąć — na numie w tym miejscu ekran wypełnia obraz następnej sceny -->
-<section class="scena" id="najazd" style="height:300vh;margin-top:-236vh;z-index:2">
+<!-- Start 3500 px po początku ściany; obie kamery puszczają ekran dopiero po animacji napisu i zdjęcia. -->
+<section class="scena" id="najazd" style="height:calc(3000px + 100svh);margin-top:calc(-3000px - 100svh);z-index:2">
   <div class="kamera">
     <div class="tlo"><img src="img/f20370800d.jpg" alt="Kuchnia na wymiar" id="fotoNajazd"></div>
     <div class="napis">
@@ -442,7 +444,8 @@ footer{padding:2.2rem 0;border-top:1px solid var(--line);font-size:.66rem;letter
 </section>
 
 <!-- SCENA 4 — OFERTA: jedna kamera, treść wymieniana w punktach wyzwalania (numa) -->
-<section class="scena" id="oferta" style="height:620vh">
+<!-- Oferta wchodzi pod kadr, gdy zdjęcie zaczyna przesuwać się w górę; po animacji jest już na ekranie. -->
+<section class="scena" id="oferta" style="height:620vh;margin-top:calc(-100svh - 675px)">
   <div class="kamera">
     <div id="karty"></div>
     <div class="postep" id="postep"></div>
@@ -880,9 +883,9 @@ if(!MOBILE && window.gsap && window.ScrollTrigger){
     scrollTrigger:{trigger:'#sciana',start:'top top-=4650',end:'top top-=4950',scrub:0.3}
   });
 
-  /* 6. SCENA 3: NAJAZD KAMERY & ZJAZD OBRAZU
-     1. Na początku: tekst "Projekt i montaż" rozszerza się, a obraz się przybliża (stricte do montażu!)
-     2. Dopiero potem: obraz cały zjeżdża w dół (yPercent: 100) */
+  /* 6. SCENA 3: ROZSUNIĘCIE NAPISU I WYJŚCIE OBRAZU
+     1. Tekst "Projekt i montaż" rozsuwa się, a zdjęcie zachowuje stały rozmiar.
+     2. Dopiero potem cały obraz przesuwa się w górę (yPercent: -100). */
   gsap.timeline({
     scrollTrigger:{
       trigger:'#sciana',
@@ -891,13 +894,12 @@ if(!MOBILE && window.gsap && window.ScrollTrigger){
       scrub:true
     }
   })
-  /* Faza 1: Rozszerzanie wierszy i przybliżanie obrazu montażu */
-  .fromTo('#fotoNajazd',{scale:1},{scale:1.8,ease:'power2.in',duration:0.48},0)
+  /* Faza 1: Rozsunięcie wierszy bez skalowania zdjęcia */
   .fromTo('.wiersz[data-x="-1"]',{xPercent:0},{xPercent:-48,ease:'none',duration:0.48},0)
   .fromTo('.wiersz[data-x="1"]',{xPercent:0},{xPercent:48,ease:'none',duration:0.48},0)
   .to('.napis',{opacity:0,duration:0.15,ease:'power1.in'},0.38)
-  /* Faza 2: Dopiero potem obraz cały zjeżdża w dół */
-  .to('#najazd .tlo',{yPercent:100,ease:'power2.inOut',duration:0.45},0.55);
+  /* Faza 2: Dopiero potem obraz cały wyjeżdża w górę */
+  .to('#najazd .tlo',{yPercent:-100,ease:'power2.inOut',duration:0.45},0.55);
 
   /* —— SCENA 4: wymiana treści w jednej kamerze, bez powtarzania animacji (numa) —— */
   var kartyEl=[].slice.call(karty.children), kropki=[].slice.call(postep.children), akt=-1;
@@ -921,7 +923,7 @@ if(!MOBILE && window.gsap && window.ScrollTrigger){
     kropki.forEach(function(k,i){k.className=i<=n?'on':''});
 
   }
-  ScrollTrigger.create({trigger:sekOferta,start:'top top',end:'bottom bottom',
+  ScrollTrigger.create({trigger:sekOferta,start:'top top-=675',end:'bottom bottom',
     onUpdate:function(self){pokaz(Math.min(KAT.length-1,Math.floor(self.progress*KAT.length)))}});
   pokaz(0);
 
@@ -960,8 +962,8 @@ if(!MOBILE && window.gsap && window.ScrollTrigger){
     onEnter:jasne(true), onLeaveBack:jasne(false)});           /* kadr skurczony → kremowe tło */
   ScrollTrigger.create({trigger:'#sciana',start:'top top-=4150',
     onEnter:jasne(false), onLeaveBack:jasne(true)});           /* odsłonięty kadr montażu */
-  ScrollTrigger.create({trigger:'#najazd',start:'bottom bottom-=260',
-    onEnter:jasne(true), onLeaveBack:jasne(false)});           /* koniec sceny montażu */
+  ScrollTrigger.create({trigger:'#sciana',start:'top top-=5825',
+    onEnter:jasne(true), onLeaveBack:jasne(false)});           /* oferta odsłania się spod kadru */
   ScrollTrigger.create({trigger:'#drzwi',start:'top top',
     onEnter:jasne(false), onLeaveBack:jasne(true)});           /* kadr rozsuwany */
   ScrollTrigger.create({trigger:'#drzwi',start:'top top-=1300',
